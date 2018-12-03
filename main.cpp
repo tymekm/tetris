@@ -2,7 +2,6 @@
 #include "Render.h"
 
 #include <memory>
-#include <algorithm>
 
 const int HEIGHT = 18;
 const int WIDTH = 12;
@@ -24,17 +23,17 @@ void gameLoop(Render & screen)
     std::unique_ptr<Tetromino> newPiece (new Tetromino);     
     vector<Coords> alreadyOccupied = initOccupied();
     int ch;
-    screen.Draw(playWin, piece.get()->getOccupied(),
+    screen.Draw(Window::playWin, piece.get()->getOccupied(),
 	    piece.get()->getColor());
 
     while (true)
     {
-	if (piece.get()->getState() not_eq stuck)
+	if (piece.get()->getState() not_eq State::stuck)
 	{
 	    ch = getch();
 	    screen.clearLastDraw(piece.get()->getOccupied());
 	}
-	else if (piece.get()->getState() == stuck)
+	else if (piece.get()->getState() == State::stuck)
 	{
 	    alreadyOccupied.insert(alreadyOccupied.end(),
 		piece.get()->getOccupied().begin(),
@@ -42,27 +41,27 @@ void gameLoop(Render & screen)
 	    piece = std::move(newPiece);
 	    newPiece.reset(new Tetromino);
 	    auto lines = getLines(alreadyOccupied);
-	    screen.Draw(playWin, linesToCoords(lines), line, '=');
-	    screen.Draw(playWin, piece.get()->getOccupied(),
+	    screen.Draw(Window::playWin, linesToCoords(lines), line, '=');
+	    screen.Draw(Window::playWin, piece.get()->getOccupied(),
 		piece.get()->getColor());
 	    ch = getch();
 	}
 	switch (ch) 
 	{
 	    case KEY_DOWN:
-		piece.get()->move(down, alreadyOccupied);	
+		piece.get()->move(Direction::down, alreadyOccupied);	
 		break;
 	    case KEY_LEFT:
-		piece.get()->move(left, alreadyOccupied);	
+		piece.get()->move(Direction::left, alreadyOccupied);	
 		break;
 	    case KEY_RIGHT:
-		piece.get()->move(right, alreadyOccupied);	
+		piece.get()->move(Direction::right, alreadyOccupied);	
 		break;
 	    case ' ':
 		piece.get()->rotate(alreadyOccupied);
 	        break;
 	}
-	screen.Draw(playWin, piece.get()->getOccupied(),
+	screen.Draw(Window::playWin, piece.get()->getOccupied(),
 		piece.get()->getColor());
     }
 }

@@ -24,17 +24,17 @@ Render::Render(const int h, const int w)
     makeWindows(h,w);
 }
 
-window & Render::getWin(const int w)
+window & Render::getWin(Window w)
 {
     switch (w) 
     {
-        case playWin:
+	case Window::playWin:
 	    return wins.playWin;	
     	break;
-	case scoreWin:
+	case Window::scoreWin:
 	    return wins.scoreWin; 
 	    break;	
-	case previewWin:
+	case Window::previewWin:
 	    return wins.previewWin; 
 	    break;
 	default:
@@ -42,7 +42,7 @@ window & Render::getWin(const int w)
     }
 }
 
-void Render::Draw(const int w, const vector<Coords> & toDraw,
+void Render::Draw(Window w, const vector<Coords> & toDraw,
 		const int c, const char ch)
 {
     auto win = getWin(w);

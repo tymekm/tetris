@@ -89,13 +89,13 @@ void Tetromino::fillOccupied(int x, int y)
     }
 }
 
-void Tetromino::move(const int dir, vector<Coords> & alreadyOccupied)
+void Tetromino::move(Direction dir, vector<Coords> & alreadyOccupied)
 {
     vector<Coords>::iterator it;
     Coords temp = pos;
     switch (dir) 
     {
-        case down:
+	case Direction::down:
 	    temp.y ++; 
 	    fillOccupied(temp.x,temp.y);
 	    for (auto &i : occByTetr) 
@@ -103,10 +103,10 @@ void Tetromino::move(const int dir, vector<Coords> & alreadyOccupied)
 		    if (i == j)
 		    {
 			fillOccupied(pos.x, pos.y);
-			state = stuck;
+			state = State::stuck;
 		    }
     	break;
-        case right:
+	case Direction::right:
 	    temp.x ++; 
 	    fillOccupied(temp.x,temp.y);
 	    for (auto &i : occByTetr) 
@@ -114,10 +114,10 @@ void Tetromino::move(const int dir, vector<Coords> & alreadyOccupied)
 		    if (i == j)
 		    {
 			fillOccupied(pos.x, pos.y);
-			state = invalid;
+			state = State::invalid;
 		    }
     	break;
-        case left:
+	case Direction::left:
 	    temp.x --; 
 	    fillOccupied(temp.x,temp.y);
 	    for (auto &i : occByTetr) 
@@ -125,14 +125,14 @@ void Tetromino::move(const int dir, vector<Coords> & alreadyOccupied)
 		    if (i == j)
 		    {
 			fillOccupied(pos.x, pos.y);
-			state = invalid;
+			state = State::invalid;
 		    }
     	break;
     }
-    if (state == valid)
+    if (state == State::valid)
 	pos = temp;
-    else if (state == invalid)
-	state = valid;
+    else if (state == State::invalid)
+	state = State::valid;
 }
 
 void Tetromino::rotate(vector<Coords> & alreadyOccupied)
@@ -145,14 +145,14 @@ void Tetromino::rotate(vector<Coords> & alreadyOccupied)
     for (auto &i : occByTetr) 
 	for (auto &j : alreadyOccupied)
 	    if (i == j)
-		state = invalid;
-    if (state == invalid)
+		state = State::invalid;
+    if (state == State::invalid)
     {
 	if (orientation == 0)
 	    orientation = 3;
 	orientation--;
     }
     fillOccupied(pos.x, pos.y);
-    state = valid;
+    state = State::valid;
 }
 
