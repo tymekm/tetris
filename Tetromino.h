@@ -5,32 +5,11 @@
 #include <vector>
 #include <stdlib.h>
 #include <algorithm>
+#include "Enums.h"
 using std::array;
 using std::vector;
 enum {down, right, left};
 enum {valid, invalid, stuck};
-
-#ifndef COORDS
-#define COORDS
-struct Coords
-{
-    int x;
-    int y;
-
-    friend bool operator==(const Coords & c1, const Coords & c2)
-    {
-	return c1.x == c2.x and c1.y == c2.y;
-    }
-    friend bool operator<(const Coords & c1, const Coords & c2)
-    {
-        return c1.y < c2.y;
-    }
-    friend bool operator>(const Coords & c1, const Coords & c2)
-    {
-        return c1.y > c2.y;
-    }
-};
-#endif
 
 class Tetromino 
 {
@@ -40,7 +19,7 @@ public:
     int getColor() const { return color; }
     int getState() const { return state; }
     void move(const int dir, vector<Coords> & alreadyOccupied);
-    bool rotate();
+    void rotate(vector<Coords> & alreadyOccupied);
     vector<Coords> & getOccupied() { return occByTetr; }
 private:
     void fillOccupied(int x, int y);
