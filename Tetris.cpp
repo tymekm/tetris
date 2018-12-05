@@ -45,7 +45,6 @@ GameState Tetris::movePiece(Direction dir)
 		black);
 	piece = std::move(nextPiece);
 	nextPiece.reset(new Tetromino);
-
 	screen.Draw(Window::playWin, piece.get()->getOccupied(),
 		piece.get()->getColor());
 	screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
@@ -145,7 +144,7 @@ void Tetris::handleLines(const vector<int> & l)
     {
         vector<Coords> toShift;
         for (auto & coord : occupiedSpace) 
-	    if (coord.y > 0 and coord.y < line
+	    if (coord.y > 0 and coord.y <= line
         	    and coord.x > 0 and coord.x < win.width - 1)
             {
         	toShift.push_back(coord);
