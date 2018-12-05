@@ -45,7 +45,7 @@ void gameLoop(Tetris & tetris)
 	}
 	sleep_for(milliseconds(10));
 	tick += 1;
-	if (tick == (100 - tetris.getLevel()))
+	if (tick == (100 - tetris.getLevel() * 4))
 	{
 	    tetris.movePiece(Direction::down);
 	    tick = 0;

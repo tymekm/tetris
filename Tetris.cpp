@@ -8,7 +8,7 @@ Tetris::Tetris(const int h, const int w)
 	    piece.get()->getColor());
     screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
 	    nextPiece.get()->getColor());
-    checkLevelUp();
+    checkLevelUp(0);
     addScore(0);
     nodelay(stdscr, true);
 }
@@ -25,33 +25,37 @@ void Tetris::initOccupied()
     occupiedSpace = occupied;
 }
 
-void Tetris::movePiece(Direction dir)
+GameState Tetris::movePiece(Direction dir)
 {
     vector<Coords> oldOccupied = piece.get()->getOccupied();
     piece.get()->move(dir, occupiedSpace);
     if (piece.get()->getState() == State::stuck)
     {
-	vector<Coords> oldOccupied = piece.get()->getOccupied();
 	occupiedSpace.insert(occupiedSpace.begin(),
 	    piece.get()->getOccupied().begin(),
 	    piece.get()->getOccupied().end());
-	drawPiece(oldOccupied);
+	auto & temp = piece.get()->getOccupied();
+	auto it = std::find_if
+	    (temp.begin(), temp.end(),
+	     [](auto & a) { return a.y < 1;} );
+	if (it != temp.end())
+	    return GameState::gameover;
 	checkForLines();
 	screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
 		black);
 	piece = std::move(nextPiece);
 	nextPiece.reset(new Tetromino);
-	screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
-		nextPiece.get()->getColor());
+
 	screen.Draw(Window::playWin, piece.get()->getOccupied(),
 		piece.get()->getColor());
+	screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
+		nextPiece.get()->getColor());
     }
     else if (piece.get()->getState() == State::valid)
-    {
 	drawPiece(oldOccupied);
-    }
     else
 	piece.get()->makeValid();
+    return GameState::running;
 }
 
 void Tetris::rotatePiece()
@@ -85,14 +89,13 @@ void Tetris::drawPiece(const vector<Coords> & oldOccupied)
 
 void Tetris::checkForLines()
 {
-    int count;
     const int HEIGHT = screen.getWin(Window::playWin).height;
     const int WIDTH = screen.getWin(Window::playWin).width;
     vector<int> lines;
     int lineCount = 0;
     for (int y = HEIGHT - 2; y > 0; y--)
     {
-	count = count_if(occupiedSpace.begin(), occupiedSpace.end(),
+	int count = count_if(occupiedSpace.begin(), occupiedSpace.end(),
 		[y](Coords & c){ return c.y == y; }); 
 	if (count == WIDTH)
 	{
@@ -103,9 +106,9 @@ void Tetris::checkForLines()
     }
     if (!lines.empty())
     {
-	std::sort(lines.begin(), lines.end());
 	linesCleared += lineCount;
-	checkLevelUp();
+	std::sort(lines.rbegin(), lines.rend());
+	checkLevelUp(lineCount);
 	addScore(lineCount);
 	handleLines(lines);
     }
@@ -124,23 +127,25 @@ void Tetris::handleLines(const vector<int> & l)
 	    lineCoords.push_back({x, line});
 
     screen.Draw(Window::playWin, lineCoords, line, '=');
-    sleep_for(milliseconds(100));
-    screen.Draw(Window::playWin, lineCoords, black, 'X');
+    sleep_for(milliseconds(200));
+    screen.Draw(Window::playWin, lineCoords, black, ' ');
 
     vector<Coords> temp;
     std::sort(occupiedSpace.begin(), occupiedSpace.end());
     std::sort(lineCoords.begin(), lineCoords.end());
-    std::set_difference(
-        occupiedSpace.begin(), occupiedSpace.end(),
-        lineCoords.begin(), lineCoords.end(),
-        std::back_inserter(temp));
+    std::set_difference
+	(
+	    occupiedSpace.begin(), occupiedSpace.end(),
+	    lineCoords.begin(), lineCoords.end(),
+	    std::back_inserter(temp)
+	);
     occupiedSpace = std::move(temp);
 
     for (auto & line : l)
     {
         vector<Coords> toShift;
         for (auto & coord : occupiedSpace) 
-            if (coord.y > 0 and coord.y < line
+	    if (coord.y > 0 and coord.y < line
         	    and coord.x > 0 and coord.x < win.width - 1)
             {
         	toShift.push_back(coord);
@@ -174,17 +179,15 @@ void Tetris::addScore(const int l)
     auto win = screen.getWin(Window::scoreWin);
     unsigned int numberOfDigits = 0;
     unsigned int n = totScore;
-    do {
-	++numberOfDigits; 
-	n /= 10;
-    } while (n);    
+    do { ++numberOfDigits; n /= 10; } while (n);    
     int x = win.width / 2 - (numberOfDigits / 2);
     int y = 1;
     screen.Draw(Window::scoreWin, totScore, x, y);
 }
 
-void Tetris::checkLevelUp()
+void Tetris::checkLevelUp(const int l)
 {
+    lineCounter += l;
     if (lineCounter >= 20)
     {
 	level++;
@@ -193,10 +196,7 @@ void Tetris::checkLevelUp()
     auto win = screen.getWin(Window::scoreWin);
     unsigned int numberOfDigits = 0;
     unsigned int n = totScore;
-    do {
-	++numberOfDigits; 
-	n /= 10;
-    } while (n);    
+    do { ++numberOfDigits; n /= 10; } while (n);    
     int x = win.width / 2;
     int y = 3;
     screen.Draw(Window::scoreWin, "lvl:", x - 3, y);

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <thread>
 
+enum class GameState {running, gameover};
 
 class Tetris 
 {
@@ -24,11 +25,11 @@ class Tetris
 	void checkForLines();
 	void handleLines(const vector<int> & l);
 	void addScore(const int l);
-	void checkLevelUp();
+	void checkLevelUp(const int l);
     public:
 	Tetris(const int h = 25, const int w = 13);
 	vector<Coords> & getOccupied() { return occupiedSpace; }
-	void movePiece(Direction dir = Direction::down);
+	GameState movePiece(Direction dir = Direction::down);
 	void rotatePiece();
 	int getLevel() { return level; }
 };
