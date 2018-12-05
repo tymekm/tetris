@@ -14,10 +14,14 @@ struct Coords
     }
     friend bool operator<(const Coords & c1, const Coords & c2)
     {
+	if (c1.y == c2.y)
+	    return c1.x < c2.x;
         return c1.y < c2.y;
     }
     friend bool operator>(const Coords & c1, const Coords & c2)
     {
+	if (c1.y == c2.y)
+	    return c1.x > c2.x;
         return c1.y > c2.y;
     }
 };

@@ -42,26 +42,57 @@ window & Render::getWin(Window w)
     }
 }
 
-void Render::Draw(Window w, const vector<Coords> & toDraw,
-		const int c, const char ch)
+void Render::Draw(const Window w, const vector<Coords> & toDraw,
+		const int color, const char character)
 {
     auto win = getWin(w);
     for (auto it : toDraw)
 	if (it.y > 0)
-	    mvwaddch(win.win, it.y, it.x, ch| COLOR_PAIR(c));
+	{
+	    mvwaddch(win.win, it.y, it.x, character| COLOR_PAIR(color));
+	}
     wrefresh(win.win);
-    lastDrawn.win = win;
-    lastDrawn.coords = toDraw;
 }
 
-void Render::clearLastDraw(vector<Coords> & toOmit)
+void Render::Draw(const Window w, const vector<CharNCoords> & characters)
 {
-	
-    for (auto &i : lastDrawn.coords)
-	if (i.y > 0)
-	    mvwaddch(lastDrawn.win.win, i.y, i.x, 'X' | COLOR_PAIR(black));
-    wnoutrefresh(lastDrawn.win.win);
-    wrefresh(lastDrawn.win.win);
+    auto win = getWin(w);
+    for (auto c : characters) 
+	mvwaddch(win.win, c.coords.y, c.coords.x, c.text | c.color);
+    wrefresh(win.win);
+}
+
+void Render::Draw(const Window w, const int toDraw, const int x, const int y)
+{
+    auto win = getWin(w);
+    mvwprintw(win.win, y, x, "%d", toDraw);
+    wrefresh(win.win);
+}
+
+void Render::Draw(const Window w, const char * toDraw, const int x, const int y)
+{
+    auto win = getWin(w);
+    mvwprintw(win.win, y, x, toDraw);
+    wrefresh(win.win);
+}
+
+void Render::shift(const Window w, const vector<Coords> & toShift,
+	const int xOffset, const int yOffset)
+{
+    vector<CharNCoords> chars;
+    auto win = getWin(w).win;
+    for (auto & coord : toShift) 
+    {
+	chtype character = mvwinch(win, coord.y, coord.x); 
+	Coords newCoords = {coord.x + xOffset, coord.y + yOffset};
+	auto color = character & A_COLOR;
+	auto text = character & A_CHARTEXT;
+	chars.push_back({newCoords, color, text});
+    }
+    wclear(win);
+    wattron(win ,COLOR_PAIR(white));
+    box(win, ' ', ' ');
+    Draw(w, chars);
 }
 
 void Render::makeWindows(const int playHeight, const int playWidth)
@@ -110,3 +141,4 @@ void Render::makeWindows(const int playHeight, const int playWidth)
     wins.scoreWin = scoreBox;
     wins.previewWin = previewBox;
 }
+

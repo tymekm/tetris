@@ -1,8 +1,11 @@
 #include "Tetromino.h"
 
+int Tetromino::randCounter = 0;
+
 Tetromino::Tetromino()
 {
-    std::srand(std::time(0));
+    randCounter++;
+    std::srand(std::time(0) + randCounter);
     const int i = rand() % 7;
     tetArr = tetrominos[i];
     color = rand() % 5 + 1;
@@ -31,11 +34,12 @@ Tetromino::Tetromino()
     	break;
     }
     if (i < 4)
-	pos.y = -1; 
+	pos.y = -2; 
     else if (i >= 4)
-	pos.y = -2;
+	pos.y = -3;
     pos.x = 4;
     fillOccupied(pos.x, pos.y);
+    fillPreview();
 }
 
 void Tetromino::fillOccupied(int x, int y)
@@ -89,6 +93,23 @@ void Tetromino::fillOccupied(int x, int y)
     }
 }
 
+void Tetromino::fillPreview()
+{
+    int x = 3;
+    int y = 2;
+    for (int i = 0; i < 16; i++) 
+    {
+	if (i % 4 == 0 and i > 0)
+	{
+	    y++;
+	    x -= 4;
+	}
+	if (tetArr[i] == true)
+	    preview.push_back({x,y});
+	x++;
+    }
+}
+
 void Tetromino::move(Direction dir, vector<Coords> & alreadyOccupied)
 {
     vector<Coords>::iterator it;
@@ -131,8 +152,6 @@ void Tetromino::move(Direction dir, vector<Coords> & alreadyOccupied)
     }
     if (state == State::valid)
 	pos = temp;
-    else if (state == State::invalid)
-	state = State::valid;
 }
 
 void Tetromino::rotate(vector<Coords> & alreadyOccupied)
@@ -153,6 +172,44 @@ void Tetromino::rotate(vector<Coords> & alreadyOccupied)
 	orientation--;
     }
     fillOccupied(pos.x, pos.y);
-    state = State::valid;
 }
+
+const array<array<bool, 16>, 7> Tetromino::tetrominos =
+{{
+    {0,0,1,0,
+    0,1,1,0,
+    0,1,0,0,
+    0,0,0,0
+    },
+    {0,1,0,0,
+    0,1,1,0,
+    0,0,1,0,
+    0,0,0,0
+    },
+    {0,0,0,0,
+    0,1,1,0,
+    0,1,1,0,
+    0,0,0,0
+    },
+    {0,0,1,0,
+    0,1,1,0,
+    0,0,1,0,
+    0,0,0,0
+    },
+    {0,0,0,0,
+    0,1,1,0,
+    0,1,0,0,
+    0,1,0,0
+    },
+    {0,0,0,0,
+    0,1,1,0,
+    0,0,1,0,
+    0,0,1,0
+    },
+    {0,0,1,0,
+    0,0,1,0,
+    0,0,1,0,
+    0,0,1,0
+    }
+}};
 

@@ -1,100 +1,55 @@
-#include "Tetromino.h"
 #include "Render.h"
-
-#include <memory>
+#include "Tetris.h"
 
 const int HEIGHT = 18;
-const int WIDTH = 12;
+const int WIDTH = 10;
 
-void gameLoop(Render & screen);
-vector<Coords> initOccupied();
-vector<int> getLines(vector<Coords> & occupied);
-vector<Coords> linesToCoords(const vector<int> & l);
+void gameLoop(Tetris & tetris);
+void moveOccDown(vector<Coords> & occ, const vector<int> & l, Render & s);
+
 
 int main()
 {
-    Render screen(HEIGHT, WIDTH);  
-    gameLoop(screen);
+    Tetris tetris(HEIGHT, WIDTH);  
+    gameLoop(tetris);
 }
 
-void gameLoop(Render & screen)
+void gameLoop(Tetris & tetris)
 {
-    std::unique_ptr<Tetromino> piece (new Tetromino);     
-    std::unique_ptr<Tetromino> newPiece (new Tetromino);     
-    vector<Coords> alreadyOccupied = initOccupied();
-    int ch;
-    screen.Draw(Window::playWin, piece.get()->getOccupied(),
-	    piece.get()->getColor());
+    using std::this_thread::sleep_for;
+    using std::chrono::milliseconds;
+
+    int tick = 0;
+    int key;
 
     while (true)
     {
-	if (piece.get()->getState() not_eq State::stuck)
-	{
-	    ch = getch();
-	    screen.clearLastDraw(piece.get()->getOccupied());
-	}
-	else if (piece.get()->getState() == State::stuck)
-	{
-	    alreadyOccupied.insert(alreadyOccupied.end(),
-		piece.get()->getOccupied().begin(),
-		piece.get()->getOccupied().end());
-	    piece = std::move(newPiece);
-	    newPiece.reset(new Tetromino);
-	    auto lines = getLines(alreadyOccupied);
-	    screen.Draw(Window::playWin, linesToCoords(lines), line, '=');
-	    screen.Draw(Window::playWin, piece.get()->getOccupied(),
-		piece.get()->getColor());
-	    ch = getch();
-	}
-	switch (ch) 
+	key = getch();
+	switch (key) 
 	{
 	    case KEY_DOWN:
-		piece.get()->move(Direction::down, alreadyOccupied);	
+		tetris.movePiece(Direction::down);
 		break;
 	    case KEY_LEFT:
-		piece.get()->move(Direction::left, alreadyOccupied);	
+		tetris.movePiece(Direction::left);
 		break;
 	    case KEY_RIGHT:
-		piece.get()->move(Direction::right, alreadyOccupied);	
+		tetris.movePiece(Direction::right);
 		break;
 	    case ' ':
-		piece.get()->rotate(alreadyOccupied);
+		tetris.rotatePiece();
 	        break;
+	    case KEY_UP:
+		sleep_for(milliseconds(1000000));
+		break;
 	}
-	screen.Draw(Window::playWin, piece.get()->getOccupied(),
-		piece.get()->getColor());
+	sleep_for(milliseconds(10));
+	tick += 1;
+	if (tick == (100 - tetris.getLevel()))
+	{
+	    tetris.movePiece(Direction::down);
+	    tick = 0;
+	}
+	key = 0;
     }
-}
-
-vector<Coords> initOccupied()
-{
-    vector<Coords> occupied;
-    for (int y = 0; y < HEIGHT; y++) 
-	for (int x = 0; x < WIDTH; x++) 
-	    if (y == HEIGHT - 1 or x == 0 or x == WIDTH -1)
-		occupied.push_back({x,y});
-    return occupied;
-}
-
-vector<int> getLines(vector<Coords> & occupied)
-{
-    int count;
-    vector<int> lines;
-    for (int y = HEIGHT - 2; y > 0; y--)
-    {
-	count = count_if(occupied.begin(), occupied.end(),
-		[y](Coords & c){ return c.y == y; }); 
-	if (count == WIDTH)
-	    lines.push_back(y);
-    }
-    return lines;
-}
-
-vector<Coords> linesToCoords(const vector<int> & l)
-{
-    vector<Coords> lineCoords (l.size());
-    for (auto & it: l)
-	for (int x = 1; x < WIDTH - 1; x++) 
-	    lineCoords.push_back({x, it});
-    return lineCoords;
 }
