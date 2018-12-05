@@ -7,7 +7,7 @@ Tetromino::Tetromino()
     randCounter++;
     std::srand(std::time(0) + randCounter);
     const int i = rand() % 7;
-    tetArr = tetrominos[2];
+    tetArr = tetrominos[i];
     color = rand() % 5 + 1;
     switch (i) 
     {
