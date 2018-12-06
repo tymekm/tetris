@@ -187,10 +187,10 @@ void Tetris::addScore(const int l)
 void Tetris::checkLevelUp(const int l)
 {
     lineCounter += l;
-    if (lineCounter >= 20)
+    if (lineCounter >= 10)
     {
 	level++;
-	lineCounter -= 20;
+	lineCounter -= 10;
     }
     auto win = screen.getWin(Window::scoreWin);
     unsigned int numberOfDigits = 0;

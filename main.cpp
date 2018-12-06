@@ -2,7 +2,7 @@
 #include "Tetris.h"
 
 const int HEIGHT = 18;
-const int WIDTH = 10;
+const int WIDTH = 13;
 
 void gameLoop(Tetris & tetris);
 void moveOccDown(vector<Coords> & occ, const vector<int> & l, Render & s);
@@ -39,13 +39,13 @@ void gameLoop(Tetris & tetris)
 	    case ' ':
 		tetris.rotatePiece();
 	        break;
-	    case KEY_UP:
-		sleep_for(milliseconds(1000000));
-		break;
+	//    case KEY_UP:
+	//	sleep_for(milliseconds(1000000));
+	//	break;
 	}
-	sleep_for(milliseconds(10));
+	sleep_for(milliseconds(1));
 	tick += 1;
-	if (tick == (100 - tetris.getLevel() * 4))
+	if (tick == (1000 - tetris.getLevel() * 40))
 	{
 	    tetris.movePiece(Direction::down);
 	    tick = 0;

@@ -1,5 +1,5 @@
 #ifndef TETRIS_H
-#define TETRIS_H
+#define TETRIS_H 
 #include "Render.h"
 #include "Tetromino.h"
 #include "Enums.h"
@@ -19,7 +19,7 @@ class Tetris
 	unsigned int totScore = 0;
 	int linesCleared = 0;
 	int lineCounter = 0;
-	int level = 1;
+	int level = 10;
 	void initOccupied();
 	void drawPiece(const vector<Coords> & oldOccupied);
 	void checkForLines();
