@@ -18,7 +18,7 @@ void Tetris::initOccupied()
     const int HEIGHT = screen.getWin(Window::playWin).height;
     const int WIDTH = screen.getWin(Window::playWin).width;
     vector<Coords> occupied;
-    for (int y = 0; y < HEIGHT; y++) 
+    for (int y = -3; y < HEIGHT; y++) 
 	for (int x = 0; x < WIDTH; x++) 
 	    if (y == HEIGHT - 1 or x == 0 or x == WIDTH -1)
 		occupied.push_back({x,y});
