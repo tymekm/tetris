@@ -106,7 +106,7 @@ void Tetris::checkForLines()
     if (!lines.empty())
     {
 	linesCleared += lineCount;
-	std::sort(lines.rbegin(), lines.rend());
+	std::sort(lines.begin(), lines.end());
 	checkLevelUp(lineCount);
 	addScore(lineCount);
 	handleLines(lines);

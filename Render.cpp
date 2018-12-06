@@ -89,9 +89,7 @@ void Render::shift(const Window w, const vector<Coords> & toShift,
 	auto text = character & A_CHARTEXT;
 	chars.push_back({newCoords, color, text});
     }
-    wclear(win);
-    wattron(win ,COLOR_PAIR(white));
-    box(win, ' ', ' ');
+    Draw(w, toShift, black);
     Draw(w, chars);
 }
 
