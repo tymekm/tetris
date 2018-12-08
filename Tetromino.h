@@ -8,7 +8,7 @@
 using std::array;
 using std::vector;
 
-enum class Direction {down, right, left};
+enum class Direction {down, right, left, rotate};
 enum class State {valid, invalid, stuck};
 
 class Tetromino

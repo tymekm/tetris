@@ -1,5 +1,6 @@
 #include "Render.h"
 #include "Tetris.h"
+#include <iostream>
 
 const int HEIGHT = 18;
 const int WIDTH = 13;
@@ -12,6 +13,9 @@ int main()
 {
     Tetris tetris(HEIGHT, WIDTH);  
     gameLoop(tetris);
+    int score = tetris.getScore();
+    std::cout << "Game Over!\n";
+    std::cout << "Score: " << score << '\n';
 }
 
 void gameLoop(Tetris & tetris)
@@ -24,25 +28,37 @@ void gameLoop(Tetris & tetris)
 
     while (true)
     {
+	if (tetris.getState() == GameState::gameover)
+	{
+	    werase(stdscr);
+	    refresh();
+	    break;
+	}
 	key = getch();
+	Direction dir;
 	switch (key) 
 	{
 	    case KEY_DOWN:
-		tetris.movePiece(Direction::down);
+		dir = Direction::down;
 		break;
 	    case KEY_LEFT:
-		tetris.movePiece(Direction::left);
+		dir = Direction::left;
 		break;
 	    case KEY_RIGHT:
-		tetris.movePiece(Direction::right);
+		dir = Direction::right;
 		break;
 	    case ' ':
-		tetris.rotatePiece();
+		dir = Direction::rotate;
 	        break;
-	//    case KEY_UP:
-	//	sleep_for(milliseconds(1000000));
-	//	break;
+	    case 'p':
+	    case 'P':
+		tetris.pause();
+		break;
 	}
+	if (tetris.getState() == GameState::paused)
+	    continue;
+	if (key != ERR)
+	    tetris.movePiece(dir);
 	sleep_for(milliseconds(1));
 	tick += 1;
 	if (tick == (1000 - tetris.getLevel() * 40))
@@ -50,6 +66,5 @@ void gameLoop(Tetris & tetris)
 	    tetris.movePiece(Direction::down);
 	    tick = 0;
 	}
-	key = 0;
     }
 }

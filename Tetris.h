@@ -7,7 +7,7 @@
 #include <chrono>
 #include <thread>
 
-enum class GameState {running, gameover};
+enum class GameState {running, paused, gameover};
 
 class Tetris 
 {
@@ -15,6 +15,7 @@ class Tetris
 	std::unique_ptr<Tetromino> piece;
 	std::unique_ptr<Tetromino> nextPiece;
 	Render screen;
+	GameState state = GameState::running;
 	vector<Coords> occupiedSpace;
 	unsigned int totScore = 0;
 	int linesCleared = 0;
@@ -31,7 +32,10 @@ class Tetris
 	vector<Coords> & getOccupied() { return occupiedSpace; }
 	GameState movePiece(Direction dir = Direction::down);
 	void rotatePiece();
+	void pause();
 	int getLevel() { return level; }
+	GameState getState() { return state; }
+	int getScore() { return totScore; }
 };
 
 #endif

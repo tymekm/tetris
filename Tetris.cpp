@@ -39,7 +39,10 @@ GameState Tetris::movePiece(Direction dir)
 	    (temp.begin(), temp.end(),
 	     [](auto & a) { return a.y < 1;} );
 	if (it != temp.end())
+	{
+	    state = GameState::gameover;
 	    return GameState::gameover;
+	}
 	checkForLines();
 	screen.Draw(Window::previewWin, nextPiece.get()->getPreview(),
 		black);
@@ -201,3 +204,12 @@ void Tetris::checkLevelUp(const int l)
     screen.Draw(Window::scoreWin, "lvl:", x - 3, y);
     screen.Draw(Window::scoreWin, level, x + 1, y);
 }
+
+void Tetris::pause()
+{
+    if (state == GameState::paused)
+	state = GameState::running;
+    else
+	state = GameState::paused;
+}
+

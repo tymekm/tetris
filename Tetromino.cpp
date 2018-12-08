@@ -149,6 +149,9 @@ void Tetromino::move(Direction dir, vector<Coords> & alreadyOccupied)
 			state = State::invalid;
 		    }
     	break;
+	case Direction::rotate:
+	    rotate(alreadyOccupied);
+	break;
     }
     if (state == State::valid)
 	pos = temp;

@@ -30,6 +30,7 @@ class Render
 {
     public:
 	Render(const int h, const int w);
+	~Render() {endwin();};
 	window & getWin(Window w);
 	void Draw(Window w, const vector<Coords> & toDraw,
 		const int color, const char character = ' '); 
