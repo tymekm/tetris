@@ -1,2 +1,6 @@
-all:
-	g++ -Wall -std=c++14 -lncurses main.cpp Render.cpp Tetris.cpp Tetromino.cpp -o tetris
+SRC = $(wildcard src/*.cpp)
+CFLAGS = -Wall -std=c++14
+LDFLAGS = -lncurses
+
+tetris: 
+	${CXX} ${SRC} ${LDFLAGS} -o $@
