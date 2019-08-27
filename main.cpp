@@ -81,6 +81,9 @@ void gameLoop(Tetris & tetris)
 	    case 'P':
 		tetris.pause();
 		break;
+	    case 'q':
+	    case 'Q':
+		return;
 	}
 	if (tetris.getState() == GameState::paused)
 	    continue;
